@@ -18,3 +18,9 @@
 * python: 3.10.12
 * pyspark: 3.3.1
 * delta: 1.2.1
+
+# install requirements
+python3.10 -m pip install -r spark/requirements.txt
+
+# run unit tests
+python3.10 -m pytest
