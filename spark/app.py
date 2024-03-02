@@ -7,6 +7,7 @@ from time import time
 from uuid import uuid4
 from chispa.dataframe_comparer import *
 
+
 def add_ingestion_tms_and_uuid_v4(input_df: DataFrame, **kwargs) -> DataFrame:
     """
     A function that enriches dataframe with additional two columns
@@ -22,32 +23,35 @@ def add_ingestion_tms_and_uuid_v4(input_df: DataFrame, **kwargs) -> DataFrame:
         .withColumn("batch_id", lit(batch_id))
     return enriched_df
 
-def append_dataframe_to_delta_table(spark_session:SparkSession, delta_file_path:str, delta_table_path:str, data_schema:StructType, csv_sep:str, delta_table_keys_list:list[str]) -> None:
+
+def append_dataframe_to_delta_table(spark_session: SparkSession, delta_file_path: str, delta_table_path: str, data_schema: StructType, csv_sep: str, delta_table_keys_list: list[str]) -> None:
     data = DeltaTable.forPath(spark_session, delta_table_path)
     delta = spark_session.read.csv(
-        path=delta_file_path, 
+        path=delta_file_path,
         schema=data_schema,
         header=False,
         sep=csv_sep
     )
     data.alias("data") \
-    .merge(
+        .merge(
         delta.alias("delta"),
         reduce(
-            str.__add__, 
+            str.__add__,
             [
-                f"data.{key_field_name} = delta.{key_field_name} AND " 
+                f"data.{key_field_name} = delta.{key_field_name} AND "
                 for key_field_name in delta_table_keys_list
             ],
             str()
         )
     ) \
-    .whenMatchedUpdateAll() \
-    .whenNotMatchedInsertAll() \
-    .execute()
+        .whenMatchedUpdateAll() \
+        .whenNotMatchedInsertAll() \
+        .execute()
+
 
 def main() -> None:
-  print("Entry point")
+    print("Entry point")
+
 
 if __name__ == '__main__':
-  main()
+    main()
