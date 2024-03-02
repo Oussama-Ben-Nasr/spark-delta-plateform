@@ -2,27 +2,14 @@ from delta import *
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql.dataframe import *
+from pyspark.sql import SparkSession
 import pyspark
 import pytest
 from time import time
 from uuid import uuid4
 from chispa.dataframe_comparer import *
 from datetime import datetime
-
-def add_ingestion_tms_and_uuid_v4(input_df: DataFrame, **kwargs) -> DataFrame:
-    """
-    A function that enriches dataframe with additional two columns
-        * ingestion_tms: timestamp in the format YYYY-MM-DD HH:mm:SS
-        * batch_id: a uuid v4
-    Internally no arguments shall be provided so that we can have deterministic output.
-    """
-    ts = kwargs.get('ts', int(time()))
-    batch_id = kwargs.get('batch_id', str(uuid4()))
-
-    enriched_df = input_df \
-        .withColumn("ingestion_tms", timestamp_seconds(lit(ts)))\
-        .withColumn("batch_id", lit(batch_id))
-    return enriched_df
+from app import add_ingestion_tms_and_uuid_v4, append_dataframe_to_delta_table
 
 data_schema = StructType([
         StructField("product_id", StringType(), False),
@@ -41,7 +28,8 @@ def spark():
         .config("spark.sql.session.timeZone", "America/Los_Angeles")
 
     spark = configure_spark_with_delta_pip(builder).getOrCreate()
-    return spark
+    yield spark
+    spark.stop()
 
 
 def test_ingress_csv_file_with_header(spark) -> None:
@@ -159,8 +147,9 @@ def test_add_ingestion_tms_and_uuid_v4(spark) -> None:
 
 
 def test_ingest_one_file_and_append_to_delta_table(spark) -> None:
-    """"""
-    # TODO: add docstring and extract logic into seperate function
+    """
+    Ingest csv files into dataframes and merge them into a single delta-table using a specific key
+    """ 
     data = spark.read.csv(
         path="resources/header-table.csv", 
         schema=data_schema,
@@ -172,43 +161,15 @@ def test_ingest_one_file_and_append_to_delta_table(spark) -> None:
         .format("delta") \
         .mode("overwrite") \
         .save("/tmp/data-table")
-    
-    data = DeltaTable.forPath(spark, "/tmp/data-table")
-    
-    delta = spark.read.csv(
-        path="resources/headerless-table-updates.csv", 
-        schema=data_schema,
-        header=False,
-        sep="|"
+
+    append_dataframe_to_delta_table(
+        spark_session=spark,
+        delta_file_path="resources/headerless-table-updates.csv",
+        delta_table_path="/tmp/data-table",
+        data_schema=data_schema,
+        csv_sep="|",
+        delta_table_keys_list=["product_id", "location_id", "date"]
     )
-    
-    data.alias("price") \
-        .merge(
-            delta.alias("price_updates"),
-            'price.product_id = price_updates.product_id AND \
-                price.location_id = price_updates.location_id AND \
-                    price.date = price_updates.date AND \
-            '   
-        ) \
-        .whenMatchedUpdate(set = 
-            {
-            "product_id": "price_updates.product_id",
-            "location_id": "price_updates.location_id",
-            "date": "price_updates.date",
-            "price": "price_updates.price",
-            "cost": "price_updates.cost",
-            }
-        ) \
-        .whenNotMatchedInsert(values = 
-            {
-            "product_id": "price_updates.product_id",
-            "location_id": "price_updates.location_id",
-            "date": "price_updates.date",
-            "price": "price_updates.price",
-            "cost": "price_updates.cost",
-            }
-        ) \
-        .execute()
     
     number_written_records = spark \
         .read \
@@ -217,4 +178,3 @@ def test_ingest_one_file_and_append_to_delta_table(spark) -> None:
         .count()
     
     assert number_written_records == 13
-    
