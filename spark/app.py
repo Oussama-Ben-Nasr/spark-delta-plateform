@@ -6,6 +6,7 @@ from pyspark.sql import SparkSession
 from time import time
 from uuid import uuid4
 from chispa.dataframe_comparer import *
+from typing import List
 
 
 def add_ingestion_tms_and_uuid_v4(input_df: DataFrame, **kwargs) -> DataFrame:
@@ -24,7 +25,7 @@ def add_ingestion_tms_and_uuid_v4(input_df: DataFrame, **kwargs) -> DataFrame:
     return enriched_df
 
 
-def append_dataframe_to_delta_table(spark_session: SparkSession, delta_file_path: str, delta_table_path: str, data_schema: StructType, csv_sep: str, delta_table_keys_list: list[str]) -> None:
+def append_dataframe_to_delta_table(spark_session: SparkSession, delta_file_path: str, delta_table_path: str, data_schema: StructType, csv_sep: str, delta_table_keys_list: List[str]) -> None:
     data = DeltaTable.forPath(spark_session, delta_table_path)
     delta = spark_session.read.csv(
         path=delta_file_path,

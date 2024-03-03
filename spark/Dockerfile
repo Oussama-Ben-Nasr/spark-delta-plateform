@@ -38,4 +38,7 @@ RUN pip3 install -r requirements.txt
 # Copy the source code
 COPY . /app
 
+ENV SPARK_APPLICATION_PYTHON_LOCATION /app/app.py
+ENV SPARK_APPLICATION_ARGS "/spark/README.md"
+
 CMD ["/bin/bash", "/submit.sh"]
