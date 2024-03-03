@@ -10,11 +10,14 @@ python3.10 -m pip install -r spark/requirements.txt
 # run unit tests
 python3.10 -m pytest
 
+# source the environment
+source .workstation
+
 # run local spark cluster single worker single master
 docker compose up -d
 
 # dockerize the application
-docker build -t obn/spark-delta-plateform:0.0.1 .
+docker build -t obn/spark-delta-plateform:0.0.1 spark/
 
 # submit the spark job to the local cluster
 docker run --rm --network spark-delta-plateform_default --name pyspark-example obn/spark-delta-plateform:0.0.1

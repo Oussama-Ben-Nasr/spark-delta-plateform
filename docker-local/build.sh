@@ -10,24 +10,35 @@ export DOCKER_BUILDKIT=0
 export COMPOSE_DOCKER_CLI_BUILD=0
 
 docker build \
+  -f Dockerfile.cluster_base \
   -t cluster-base \
-  cluster-base
+  .
 
 docker build \
   --build-arg spark_version="${SPARK_VERSION}" \
   --build-arg hadoop_version="${HADOOP_VERSION}" \
+  -f Dockerfile.spark_base \
   -t spark-base \
-  spark-base
+  .
 
 docker build \
+  -f Dockerfile.spark_master \
   -t spark-master \
-  spark-master
+  .
 
 docker build \
+  -f Dockerfile.spark_history \
   -t spark-history \
-  spark-history
+  .
 
 docker build \
+  -f Dockerfile.spark_worker \
   -t spark-worker \
-  spark-worker
+  .
 
+docker build \
+  --build-arg spark_version="${SPARK_VERSION}" \
+  --build-arg jupyterlab_version="${JUPYTERLAB_VERSION}" \
+  -f Dockerfile.jupyter_lab \
+  -t jupyterlab \
+  .

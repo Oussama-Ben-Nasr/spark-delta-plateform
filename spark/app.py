@@ -3,7 +3,7 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql.dataframe import *
 from pyspark.sql import SparkSession
-from time import time
+import pyspark
 from uuid import uuid4
 from chispa.dataframe_comparer import *
 from typing import List
@@ -51,7 +51,28 @@ def append_dataframe_to_delta_table(spark_session: SparkSession, delta_file_path
 
 
 def main() -> None:
-    print("Run Me!")
+    builder = pyspark.sql.SparkSession.builder\
+        .master("spark://spark-master:7077").appName("LocalCluster") \
+        .config("spark.sql.session.timeZone", "America/Los_Angeles") \
+        #.config("spark.eventLog.enabled", "true") \
+        #.config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+        #.config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
+
+    spark = configure_spark_with_delta_pip(builder).getOrCreate()
+    schema = StructType([
+        StructField("batch_id", StringType(), False),
+        StructField("count", LongType(), False),
+    ])
+    df = spark.createDataFrame(
+        data=[("secret of life", 42)],
+        schema=schema
+    )
+
+    df.write.csv("/tmp/data.csv")
+    df2 = spark.read.csv("/tmp/data.csv", schema=schema)
+    df2.show()
+    print("Done!")
+
 
 
 if __name__ == '__main__':

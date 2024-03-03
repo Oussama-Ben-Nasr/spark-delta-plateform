@@ -1,0 +1,5 @@
+pandas
+pyspark
+delta-spark==1.2.1
+jupyterlab==2.1.5
+striprtf

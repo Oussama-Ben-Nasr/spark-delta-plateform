@@ -1,6 +1,19 @@
 version: '2.1'
 
 services:
+  jupyterlab:
+    image: jupyterlab
+    container_name: jupyterlab
+    expose:
+      - 4040
+      - 4041
+      - 8888
+    ports:
+      - 8888:8888
+      - 4040:4040
+      - 4041:4041
+    volumes:
+      - ${SHARED_DIR}:/opt/workspace
   spark-master:
     image: spark-master
     container_name: spark-master
@@ -52,3 +65,14 @@ services:
       interval: 5s
       timeout: 2s
       retries: 5
+  sparklint:
+    image: roboxue/sparklint
+    command: --historyServer http://spark-history:18080
+    container_name: sparklint
+    ports:
+      - 23763:23763
+    volumes:
+      - ${SHARED_DIR}:/opt/workspace
+    depends_on:
+      spark-history:
+        condition: service_healthy
