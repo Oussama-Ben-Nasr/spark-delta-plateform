@@ -51,7 +51,7 @@ def append_dataframe_to_delta_table(spark_session: SparkSession, delta_file_path
 
 
 def main() -> None:
-    print("Entry point")
+    print("Run Me!")
 
 
 if __name__ == '__main__':
