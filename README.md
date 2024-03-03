@@ -11,7 +11,7 @@ python3.10 -m pip install -r spark/requirements.txt
 python3.10 -m pytest
 
 # source the environment
-source .workstation
+source start.sh
 
 # run local spark cluster single worker single master
 docker compose up -d
@@ -22,6 +22,8 @@ docker build -t obn/spark-delta-plateform:0.0.1 spark/
 # submit the spark job to the local cluster
 docker run --rm --network spark-delta-plateform_default --name pyspark-example obn/spark-delta-plateform:0.0.1
 
+# clean up local cluster
+docker compose down
 
 # docs & links
 [delta lake](https://docs.delta.io/1.2.1/quick-start.html)

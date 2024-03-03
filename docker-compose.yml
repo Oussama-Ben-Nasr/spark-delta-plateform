@@ -52,3 +52,16 @@ services:
       interval: 5s
       timeout: 2s
       retries: 5
+  jupyterlab:
+    image: jupyterlab
+    container_name: jupyterlab
+    expose:
+      - 4040
+      - 4041
+      - 8888
+    ports:
+      - 8888:8888
+      - 4040:4040
+      - 4041:4041
+    volumes:
+      - ${SHARED_DIR}:/opt/workspace
