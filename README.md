@@ -13,6 +13,7 @@ python3.10 -m pytest
 
 # source the environment & build the containers
 source start.sh
+
 bash build.sh
 
 # run local spark cluster single worker single master
