@@ -13,6 +13,8 @@ if [ ! -z "${SPARK_APPLICATION_PYTHON_LOCATION}" ]; then
         --master ${SPARK_MASTER_URL} \
         ${SPARK_SUBMIT_ARGS} \
         ${SPARK_APPLICATION_PYTHON_LOCATION} ${SPARK_APPLICATION_ARGS}
+    echo "Persistaing history"
+    ${SPARK_HOME}/bin/spark-class org.apache.spark.deploy.history.HistoryServer >> /opt/workspace/logs/spark-history.out
 else
     echo "Not recognized application."
 fi
