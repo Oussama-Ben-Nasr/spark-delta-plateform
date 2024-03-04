@@ -11,14 +11,15 @@ python3.10 -m pip install -r spark/requirements.txt
 # run unit tests
 python3.10 -m pytest
 
-# source the environment
+# source the environment & build the containers
 source start.sh
+bash build.sh
 
 # run local spark cluster single worker single master
 docker compose up -d
 
 # dockerize the application
-docker build -t obn/spark-delta-plateform:0.0.1 spark/
+docker build -t obn/spark-delta-plateform:0.0.1 spark-application/
 
 # submit the spark job to the local cluster
 docker run --rm --network spark-delta-plateform_default --name pyspark-example obn/spark-delta-plateform:0.0.1
@@ -32,6 +33,8 @@ docker compose down
 [big data europe 2020](https://github.com/big-data-europe)
 
 [docker](https://docs.docker.com/reference/cli/docker/)
+
+[spark-optimization](https://github.com/ivanovro/spark-optimization)
 
 
 # architecture
