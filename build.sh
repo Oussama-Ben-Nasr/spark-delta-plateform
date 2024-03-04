@@ -31,3 +31,7 @@ docker build \
   -t spark-worker \
   spark-worker
 
+docker build \
+  -t jupyterlab \
+  spark-jupyterlab
+
