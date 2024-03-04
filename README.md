@@ -31,3 +31,7 @@ docker compose down
 [big data europe 2020](https://github.com/big-data-europe)
 
 [docker](https://docs.docker.com/reference/cli/docker/)
+
+
+# architecture
+![alt text](image.png)
