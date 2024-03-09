@@ -10,6 +10,7 @@ COPY requirements.txt /usr/bin/requirements.txt
 
 RUN mkdir -p ${shared_workspace} && \
     apt-get update -y && \
+    apt-get install -y procps && \
     apt-get install -y python3 && \
     apt-get install -y wget && \
     apt-get install -y curl && \

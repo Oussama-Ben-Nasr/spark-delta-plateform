@@ -3,11 +3,9 @@
 export SPARK_MASTER_URL=spark://${SPARK_MASTER_NAME}:${SPARK_MASTER_PORT}
 export SPARK_HOME=/usr/bin/spark-3.5.0-bin-hadoop3
 
-
 if [ ! -z "${SPARK_APPLICATION_PYTHON_LOCATION}" ]; then
     echo "Submit application ${SPARK_APPLICATION_PYTHON_LOCATION} to Spark master ${SPARK_MASTER_URL}"
     echo "Passing arguments ${SPARK_APPLICATION_ARGS}"
-    # ${SPARK_HOME}/bin/spark-class org.apache.spark.deploy.history.HistoryServer >> /opt/workspace/logs/spark-history.out
     PYSPARK_PYTHON=python3  ${SPARK_HOME}/bin/spark-submit \
         --master ${SPARK_MASTER_URL} \
         ${SPARK_SUBMIT_ARGS} \
