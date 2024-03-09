@@ -23,7 +23,7 @@ docker compose up -d
 docker build -t obn/spark-delta-plateform:0.0.1 spark-application/
 
 # submit the spark job to the local cluster
-docker run --rm --network spark-delta-plateform_default --name pyspark-example obn/spark-delta-plateform:0.0.1
+docker run --rm --network spark-delta-plateform_default --name pyspark-example --volume /workspace/spark-delta-plateform/shared-vol/:/opt/workspace obn/spark-delta-plateform:0.0.1
 
 # clean up local cluster
 docker compose down

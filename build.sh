@@ -1,7 +1,7 @@
 # -- Software Stack Version
 
-SPARK_VERSION="3.0.0"
-HADOOP_VERSION="2.7"
+SPARK_VERSION="3.5.0"
+HADOOP_VERSION="3"
 JUPYTERLAB_VERSION="2.1.5"
 
 # -- Building the Images
@@ -11,27 +11,37 @@ export COMPOSE_DOCKER_CLI_BUILD=0
 
 docker build \
   -t cluster-base \
-  cluster-base
+  cluster-base \
+  --no-cache
 
 docker build \
   --build-arg spark_version="${SPARK_VERSION}" \
   --build-arg hadoop_version="${HADOOP_VERSION}" \
   -t spark-base \
-  spark-base
+  spark-base \
+  --no-cache
 
 docker build \
   -t spark-master \
-  spark-master
+  spark-master \
+  --no-cache
 
 docker build \
   -t spark-history \
-  spark-history
+  spark-history \
+  --no-cache
 
 docker build \
   -t spark-worker \
-  spark-worker
+  spark-worker \
+  --no-cache
 
 docker build \
   -t jupyterlab \
-  spark-jupyterlab
+  spark-jupyterlab \
+  --no-cache
 
+docker build \
+  -t obn/spark-delta-plateform:0.0.1 \
+  spark-application \
+  --no-cache

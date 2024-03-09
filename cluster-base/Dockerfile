@@ -1,10 +1,10 @@
-ARG debian_buster_image_tag=8-jre-slim
+ARG debian_buster_image_tag=17-jdk-slim
 FROM openjdk:${debian_buster_image_tag}
 
 # -- Layer: OS + Python 3.7
 
 ARG shared_workspace=/opt/workspace
-ARG spark_version=3.0.0
+ARG spark_version=3.5.0
 
 COPY requirements.txt /usr/bin/requirements.txt
 
