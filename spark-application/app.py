@@ -68,9 +68,10 @@ def main() -> None:
         data=[("secret of life", 42)],
         schema=schema
     )
+    df.show()
 
-    df.write.csv("/tmp/data.csv")
-    df2 = spark.read.csv("/tmp/data.csv", schema=schema)
+    df.write.mode("overwrite").parquet("/opt/workspace/data.parquet")
+    df2 = spark.read.parquet("/opt/workspace/data.parquet", schema=schema)
     df2.show()
     print("Done!")
 
