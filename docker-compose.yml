@@ -1,5 +1,5 @@
 version: '2.1'
-
+name: spark-delta-plateform
 services:
   spark-master:
     image: spark-master
@@ -65,3 +65,4 @@ services:
       - 4041:4041
     volumes:
       - ${SHARED_DIR}:/opt/workspace
+

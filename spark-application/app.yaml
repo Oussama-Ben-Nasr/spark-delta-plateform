@@ -1,0 +1,10 @@
+version: "2.1"
+name: spark-delta-plateform
+services:
+  spark-application:
+    image: oussamabennasr/spark-delta-plateform:0.0.1
+    container_name: ingest-append-delta
+    volumes:
+      - ../shared-vol/:/opt/workspace
+      - ../shared-vol/.ivy2/:/root/.ivy2
+

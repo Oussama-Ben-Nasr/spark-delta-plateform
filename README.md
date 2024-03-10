@@ -21,7 +21,7 @@ docker build -t oussamabennasr/spark-delta-plateform:0.0.1 spark-application/
 docker run --rm --network spark-delta-plateform_default --name pyspark-example --volume ./shared-vol/:/opt/workspace --volume ./shared-vol/.ivy2:/root/.ivy2 -it oussamabennasr/spark-delta-plateform:0.0.1 pytest
 
 # submit the spark job to the local cluster
-docker run --rm --network spark-delta-plateform_default --name pyspark-example --volume ./shared-vol/:/opt/workspace --volume ./shared-vol/.ivy2/:/root/.ivy2 oussamabennasr/spark-delta-plateform:0.0.1
+docker compose -f spark-application/app.yaml up
 
 # clean up local cluster
 docker compose down
@@ -37,4 +37,5 @@ docker compose down
 
 
 # architecture
-![alt text](image.png)
+![spark-delta-plateform](spark-application/resources/image.png)
+
