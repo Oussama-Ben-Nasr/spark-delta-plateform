@@ -71,7 +71,7 @@ def main() -> None:
     enriched_schema = StructType([
         StructField("key", StringType(), False),
         StructField("value", LongType(), False),
-        StructField("ingestion_tms", DateType(), False),
+        StructField("ingestion_tms", TimestampType(), False),
         StructField("batch_id", StringType(), False),
     ])
     df = spark.createDataFrame(
