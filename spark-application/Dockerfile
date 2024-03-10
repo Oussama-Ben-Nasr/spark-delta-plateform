@@ -19,5 +19,6 @@ COPY . /app
 
 ENV SPARK_APPLICATION_PYTHON_LOCATION /app/app.py
 ENV SPARK_APPLICATION_ARGS ""
+ENV SPARK_SUBMIT_ARGS "--packages io.delta:delta-core_2.12:2.4.0"
 
 CMD ["/bin/bash", "/submit.sh"]

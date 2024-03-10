@@ -53,13 +53,13 @@ def append_dataframe_to_delta_table(spark_session: SparkSession, delta_file_path
 def main() -> None:
     builder = pyspark.sql.SparkSession.builder\
         .master("spark://spark-master:7077").appName("LocalCluster") \
-        .config("spark.sql.session.timeZone", "America/Los_Angeles") \
         .config("spark.eventLog.enabled", "true") \
         .config("spark.eventLog.dir", "/opt/workspace/history") \
-        #.config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        #.config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
+    
     spark = configure_spark_with_delta_pip(builder).getOrCreate()
+    print(spark.sparkContext.getConf().getAll())
     schema = StructType([
         StructField("batch_id", StringType(), False),
         StructField("count", LongType(), False),
