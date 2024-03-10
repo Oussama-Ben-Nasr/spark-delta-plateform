@@ -7,6 +7,7 @@ import pyspark
 from uuid import uuid4
 from chispa.dataframe_comparer import *
 from typing import List
+from time import time
 
 
 def add_ingestion_tms_and_uuid_v4(input_df: DataFrame, **kwargs) -> DataFrame:
@@ -59,10 +60,19 @@ def main() -> None:
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
     
     spark = configure_spark_with_delta_pip(builder).getOrCreate()
-    print(spark.sparkContext.getConf().getAll())
+ 
+    # Prepare client data, 
+    # In real world df can be read from 
+    # a remote blob storage service (Amazon, Azuere, GCP) 
     schema = StructType([
+        StructField("key", StringType(), False),
+        StructField("value", LongType(), False),
+    ])
+    enriched_schema = StructType([
+        StructField("key", StringType(), False),
+        StructField("value", LongType(), False),
+        StructField("ingestion_tms", DateType(), False),
         StructField("batch_id", StringType(), False),
-        StructField("count", LongType(), False),
     ])
     df = spark.createDataFrame(
         data=[("secret of life", 42)],
@@ -70,12 +80,36 @@ def main() -> None:
     )
     df.show()
 
-    df.write.mode("overwrite").parquet("/opt/workspace/data.parquet")
-    df2 = spark.read.parquet("/opt/workspace/data.parquet", schema=schema)
-    df2.show()
-    print("Done!")
+    # Enrich client data with ingestion time and uuid
+    # And persist that internally in adelta table
+    enriched_df = add_ingestion_tms_and_uuid_v4(df)
+    enriched_df.show()
+    enriched_df.write.format("delta").mode("overwrite").save("/opt/workspace/delta-tables-repo/table-one")
 
+    # Next day the client sent us a csv file to be appended to the delta table, it was the same file :)
+    # We did the same process and enriched that chunck of data and we wrote it to internally
+    add_ingestion_tms_and_uuid_v4(
+            spark.createDataFrame(
+                data=[
+                        ("secret of life", 41),
+                        ("spark ratings", 100),
+                ],
+                schema=schema
+            )
+    ).write.mode("overwrite").csv("/opt/workspace/ingestion-area/delta.csv")
 
+    # Append the file to our delta table 
+    append_dataframe_to_delta_table(
+            spark_session=spark, 
+            delta_table_path="/opt/workspace/delta-tables-repo/table-one",
+            delta_file_path="/opt/workspace/ingestion-area/delta.csv",
+            data_schema=enriched_schema, 
+            csv_sep=",",
+            delta_table_keys_list=["key"]
+    )
+
+    # Show final result.
+    DeltaTable.forPath(spark, "/opt/workspace/delta-tables-repo/table-one").toDF().show()
 
 if __name__ == '__main__':
     main()
