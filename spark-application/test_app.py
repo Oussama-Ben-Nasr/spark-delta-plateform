@@ -23,7 +23,6 @@ def spark():
     builder = pyspark.sql.SparkSession.builder.appName("LocalTests") \
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-        .config("spark.sql.session.timeZone", "America/Los_Angeles")
 
     spark = configure_spark_with_delta_pip(builder).getOrCreate()
     yield spark
@@ -33,7 +32,7 @@ def spark():
 def test_ingress_csv_file_with_header(spark) -> None:
     """Read a csv file into a DataFrame"""
     data = spark.read.csv(
-        path="spark/resources/header-table.csv",
+        path="resources/header-table.csv",
         schema=data_schema,
         header=True,
         sep="|"
@@ -45,7 +44,7 @@ def test_ingress_csv_file_with_header(spark) -> None:
 def test_ingress_csv_file_without_header(spark) -> None:
     """Read a headerless csv file into a DataFrame"""
     data = spark.read.csv(
-        path="spark/resources/headerless-table.csv",
+        path="resources/headerless-table.csv",
         schema=data_schema,
         header=False,
         sep="|"
@@ -59,7 +58,7 @@ def test_add_ingestion_tms_and_uuid_v4(spark) -> None:
     input_df = spark.createDataFrame([(1230219000,)], ['col_a'])
     enriched_df = add_ingestion_tms_and_uuid_v4(
         input_df=input_df,
-        ts=1709393455,
+        ts=1709337600,
         batch_id="1709393455"
     )
 
@@ -72,7 +71,7 @@ def test_add_ingestion_tms_and_uuid_v4(spark) -> None:
         StructField("count", LongType(), False),
     ])
     ingestion_tms_expected_count_df = spark.createDataFrame(
-        data=[(datetime(2024, 3, 2, 16, 30, 55), 1)],
+        data=[(datetime(2024, 3, 2), 1)],
         schema=ingestion_tms_schema
     )
     batch_id_expected_count_df = spark.createDataFrame(
@@ -113,7 +112,7 @@ def test_add_ingestion_tms_and_uuid_v4(spark) -> None:
         StructField("count", LongType(), False),
     ])
     ingestion_tms_expected_count_df = spark.createDataFrame(
-        data=[(datetime(2024, 3, 2, 16, 30, 55), 1)],
+        data=[(datetime(2024, 3, 2), 1)],
         schema=ingestion_tms_schema
     )
     batch_id_expected_count_df = spark.createDataFrame(
@@ -129,7 +128,7 @@ def test_add_ingestion_tms_and_uuid_v4(spark) -> None:
 
     enriched_df = add_ingestion_tms_and_uuid_v4(
         input_df=input_df,
-        ts=1709393455,
+        ts=1709337600,
         batch_id="1709393455"
     )
 
@@ -149,7 +148,7 @@ def test_ingest_one_file_and_append_to_delta_table(spark) -> None:
     Ingest csv files into dataframes and merge them into a single delta-table using a specific key
     """
     data = spark.read.csv(
-        path="spark/resources/header-table.csv",
+        path="resources/header-table.csv",
         schema=data_schema,
         header=True,
         sep="|"
@@ -162,7 +161,7 @@ def test_ingest_one_file_and_append_to_delta_table(spark) -> None:
 
     append_dataframe_to_delta_table(
         spark_session=spark,
-        delta_file_path="spark/resources/headerless-table-updates.csv",
+        delta_file_path="resources/headerless-table-updates.csv",
         delta_table_path="/tmp/data-table",
         data_schema=data_schema,
         csv_sep="|",

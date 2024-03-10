@@ -1,5 +1,5 @@
 pandas
 pyspark==3.5.0
 delta-spark==3.1.0
-jupyterlab==2.1.5
+jupyterlab>=3.6.7
 striprtf

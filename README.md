@@ -5,31 +5,29 @@
   * ingestion_tms (YYYY-MM-DD HH:mm:SS)
   * use append mode to automatically append new data to delta table
 
-# install requirements
-python3.10 -m pip install -r spark/requirements.txt
-
-# run unit tests
-python3.10 -m pytest
-
 # source the environment & build the containers
 source start.sh
 
+# build the images
 bash build.sh
 
 # run local spark cluster single worker single master
 docker compose up -d
 
 # dockerize the application
-docker build -t obn/spark-delta-plateform:0.0.1 spark-application/
+docker build -t oussamabennasr/spark-delta-plateform:0.0.1 spark-application/
+
+# run unit tests
+docker run --rm --network spark-delta-plateform_default --name pyspark-example --volume ./shared-vol/:/opt/workspace --volume ./shared-vol/.ivy2:/root/.ivy2 -it oussamabennasr/spark-delta-plateform:0.0.1 pytest
 
 # submit the spark job to the local cluster
-docker run --rm --network spark-delta-plateform_default --name pyspark-example --volume ./shared-vol/:/opt/workspace oussamabennasr/spark-delta-plateform:0.0.1
+docker run --rm --network spark-delta-plateform_default --name pyspark-example --volume ./shared-vol/:/opt/workspace --volume ./shared-vol/.ivy2/:/root/.ivy2 oussamabennasr/spark-delta-plateform:0.0.1
 
 # clean up local cluster
 docker compose down
 
 # docs & links
-[delta lake](https://docs.delta.io/1.2.1/quick-start.html)
+[delta lake](https://docs.delta.io/3.1.0/quick-start.html)
 
 [big data europe 2020](https://github.com/big-data-europe)
 

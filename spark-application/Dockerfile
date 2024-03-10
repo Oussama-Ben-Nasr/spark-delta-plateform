@@ -1,9 +1,5 @@
 FROM spark-base
 
-COPY wait-for-step.sh /
-COPY execute-step.sh /
-COPY finish-step.sh /
-
 ENV SPARK_MASTER_NAME spark-master
 ENV SPARK_MASTER_PORT 7077
 
