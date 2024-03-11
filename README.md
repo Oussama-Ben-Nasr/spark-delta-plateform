@@ -1,5 +1,7 @@
-# application
-# application
+# spark-delta-plateform
+A ready to go environment for people experimenting with Apache Spark and Delta.
+
+# example use case
 * Ingest csv files w/w.o headers
 * Append two colums to the output dataframe
   * ingestion_tms (YYYY-MM-DD HH:mm:SS)
@@ -12,7 +14,7 @@ source start.sh
 bash build.sh
 
 # run local spark cluster single worker single master
-docker compose up -d
+docker compose -f local-cluster.yaml up -d
 
 # dockerize the application
 docker build -t oussamabennasr/spark-delta-plateform:0.0.1 spark-application/
@@ -24,7 +26,10 @@ docker run --rm --network spark-delta-plateform_default --name pyspark-example -
 docker compose -f spark-application/app.yaml up
 
 # clean up local cluster
-docker compose down
+docker compose -f local-cluster.yaml down
+
+# architecture
+![spark-delta-plateform](spark-application/resources/image.png)
 
 # docs & links
 [delta lake](https://docs.delta.io/3.1.0/quick-start.html)
@@ -35,7 +40,4 @@ docker compose down
 
 [spark-optimization](https://github.com/ivanovro/spark-optimization)
 
-
-# architecture
-![spark-delta-plateform](spark-application/resources/image.png)
 
