@@ -15,30 +15,37 @@ jobs:
   docker:
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    env:
+      shared-dir: ./shared-vol
+      spark-worker-cores: 2
 
     steps:
     - name: Checkout
       uses: actions/checkout@v1
 
-    - name: Source the env
-      run: source start.sh
-
     - name: Build the images
       run: bash build.sh
 
     - name: Start Local Cluster
-      run: docker compose -f "local-cluster.yaml" up -d --build
+      run: docker compose -f "local-cluster.yaml" up -d
+      env:
+        SHARED_DIR: ${{env.shared-dir}}
+        SPARK_WORKER_CORE: ${{env.spark-worker-core}}
 
     - name: Run tests
       run: |
         docker run --rm \
-        --network spark-delta-plateform_default \
-        --name unit-tests-job \
-        --volume ./shared-vol/:/opt/workspace \
-        --volume ./shared-vol/.ivy2:/root/.ivy2 \
-        -it oussamabennasr/spark-delta-plateform:0.0.1 \
-        pytest
+          --network spark-delta-plateform_default \
+          --name unit-tests-job \
+          --volume ./shared-vol/:/opt/workspace \
+          --volume ./shared-vol/.ivy2:/root/.ivy2 \
+          -it oussamabennasr/spark-delta-plateform:0.0.1 \
+          pytest
 
     - name: Stop containers
       if: always()
       run: docker compose -f "local-cluster.yaml" down
+      env:
+        SHARED_DIR: ${{env.shared-dir}}
+        SPARK_WORKER_CORE: ${{env.spark-worker-core}}
+
