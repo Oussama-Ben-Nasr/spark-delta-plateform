@@ -39,7 +39,7 @@ jobs:
           --name unit-tests-job \
           --volume ./shared-vol/:/opt/workspace \
           --volume ./shared-vol/.ivy2:/root/.ivy2 \
-          -it oussamabennasr/spark-delta-plateform:0.0.1 \
+          oussamabennasr/spark-delta-plateform:0.0.1 \
           pytest
 
     - name: Stop containers
