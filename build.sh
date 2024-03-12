@@ -42,6 +42,6 @@ docker build \
   --no-cache
 
 docker build \
-  -t obn/spark-delta-plateform:0.0.1 \
+  -t oussamabennasr/spark-delta-plateform:0.0.1 \
   spark-application \
   --no-cache
