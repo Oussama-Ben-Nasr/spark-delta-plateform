@@ -1,4 +1,4 @@
-name: Test
+name: Unit Tests
 
 on:
   push:
@@ -6,13 +6,12 @@ on:
     - main
     - features/**
     - dependabot/**
-    - add_ci_cd
   pull_request:
     branches:
     - main
 
 jobs:
-  docker:
+  ci-cd:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     env:
